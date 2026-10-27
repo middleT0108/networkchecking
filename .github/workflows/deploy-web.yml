@@ -13,7 +13,6 @@ jobs:
   deploy-pages:
     name: Build & Deploy to Cloudflare Pages
     runs-on: ubuntu-latest
-    if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
 
     steps:
       - name: Checkout Code
@@ -24,10 +23,22 @@ jobs:
         with:
           node-version: 22
 
+      - name: Check Cloudflare Credentials
+        id: check-creds
+        run: |
+          if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then
+            echo "has_creds=false" >> $GITHUB_OUTPUT
+            echo "::notice ::Chua cau hinh CLOUDFLARE_API_TOKEN trong GitHub Secrets. Bo qua buoc deploy Cloudflare Pages."
+          else
+            echo "has_creds=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Install Dependencies
+        if: steps.check-creds.outputs.has_creds == 'true'
         run: npm install
 
       - name: Build Web Application
+        if: steps.check-creds.outputs.has_creds == 'true'
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
         run: |
@@ -35,6 +46,7 @@ jobs:
           npm run build --workspace=@netcheck/web
 
       - name: Deploy to Cloudflare Pages
+        if: steps.check-creds.outputs.has_creds == 'true'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
