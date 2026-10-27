@@ -1,0 +1,23 @@
+name = "netcheck-api"
+main = "src/index.ts"
+compatibility_date = "2024-10-01"
+compatibility_flags = ["nodejs_compat"]
+
+# D1 Database binding
+[[d1_databases]]
+binding = "DB"
+database_name = "netcheck-db"
+database_id = "placeholder-d1-database-id" # Replace with real D1 database_id from `wrangler d1 create netcheck-db`
+
+# KV Namespace binding (optional for status cache)
+# [[kv_namespaces]]
+# binding = "CACHE_KV"
+# id = "placeholder-kv-id"
+
+# Cron trigger: Probe server games every 10 minutes
+[triggers]
+crons = ["*/10 * * * *"]
+
+[vars]
+ENVIRONMENT = "production"
+ALLOWED_ORIGIN = "*"

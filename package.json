@@ -1,0 +1,31 @@
+{
+  "name": "netcheck-gaming",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Real-time gaming network connection checker with per-game profiles",
+  "workspaces": [
+    "packages/*",
+    "apps/*",
+    "agent"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
+    "lint": "npm run lint --workspaces",
+    "dev:api": "npm run dev --workspace=apps/api",
+    "dev:web": "npm run dev --workspace=apps/web",
+    "dev": "npm run dev --workspaces --if-present"
+  },
+  "keywords": [
+    "network",
+    "gaming",
+    "ping",
+    "jitter",
+    "packetloss",
+    "valorant",
+    "cs2",
+    "delta-force"
+  ],
+  "author": "NetCheck Gaming Team",
+  "license": "MIT"
+}

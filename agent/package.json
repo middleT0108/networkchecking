@@ -1,0 +1,26 @@
+{
+  "name": "@netcheck/agent",
+  "version": "1.0.0",
+  "description": "Desktop Agent for NetCheck Gaming - Measures real ICMP and TCP ping to game servers",
+  "main": "dist/index.js",
+  "type": "module",
+  "bin": {
+    "netcheck-agent": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.8.1",
+    "@types/ws": "^8.5.13",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.3"
+  }
+}

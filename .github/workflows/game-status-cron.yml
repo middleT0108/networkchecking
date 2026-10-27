@@ -1,0 +1,24 @@
+name: Game Status Cron Check
+
+on:
+  schedule:
+    # Run every 15 minutes
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  check-status:
+    name: Probe & Sync Game Server Status
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Worker Status Check
+        env:
+          API_URL: ${{ secrets.VITE_API_URL }}
+        run: |
+          if [ -z "$API_URL" ]; then
+            echo "VITE_API_URL secret not set. Skipping external probe trigger."
+            exit 0
+          fi
+          echo "Sending status check trigger to $API_URL/api/cron/check-status..."
+          curl -s -X POST "$API_URL/api/cron/check-status" -H "Content-Type: application/json" || true

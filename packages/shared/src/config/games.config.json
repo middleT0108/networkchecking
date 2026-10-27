@@ -1,0 +1,384 @@
+{
+  "version": "1.0.0",
+  "disclaimer": "LƯU Ý QUAN TRỌNG: Phép đo thực hiện qua HTTP/HTTPS từ trình duyệt chỉ phản ánh độ trễ (RTT) đường truyền mạng từ máy của bạn tới CDN/Edge/Cloud provider tại khu vực đặt server game. Đây KHÔNG PHẢI ping UDP thời gian thực trong trận đấu (in-game tick-rate ping). Khi dùng chế độ Desktop Agent, ping mới đo bằng giao thức ICMP/UDP thực.",
+  "games": [
+    {
+      "id": "valorant",
+      "name": "Valorant",
+      "publisher": "Riot Games",
+      "category": "fps",
+      "icon": "shield",
+      "color": "#FD4556",
+      "statusUrl": "https://status.riotgames.com",
+      "thresholds": {
+        "greatPing": 30,
+        "okPing": 60,
+        "greatJitter": 3,
+        "okJitter": 7,
+        "maxLoss": 0
+      },
+      "regions": [
+        {
+          "id": "ap-southeast-1",
+          "name": "Singapore (SEA)",
+          "host": "ap-southeast-1.signin.aws.amazon.com",
+          "testUrl": "https://ap-southeast-1.signin.aws.amazon.com/health",
+          "type": "http-head",
+          "verified": true,
+          "note": "Cụm AWS Singapore nơi Riot Games đặt cụm máy chủ Valorant Đông Nam Á."
+        },
+        {
+          "id": "ap-east-1",
+          "name": "Hong Kong",
+          "host": "ap-east-1.signin.aws.amazon.com",
+          "testUrl": "https://ap-east-1.signin.aws.amazon.com/health",
+          "type": "http-head",
+          "verified": true,
+          "note": "Cụm AWS Hong Kong phục vụ người chơi khu vực Đông Á & HK."
+        },
+        {
+          "id": "ap-northeast-1",
+          "name": "Tokyo (Nhật Bản)",
+          "host": "ap-northeast-1.signin.aws.amazon.com",
+          "testUrl": "https://ap-northeast-1.signin.aws.amazon.com/health",
+          "type": "http-head",
+          "verified": true,
+          "note": "Cụm AWS Tokyo phục vụ Valorant Japan."
+        },
+        {
+          "id": "ap-southeast-2",
+          "name": "Sydney (Úc)",
+          "host": "ap-southeast-2.signin.aws.amazon.com",
+          "testUrl": "https://ap-southeast-2.signin.aws.amazon.com/health",
+          "type": "http-head",
+          "verified": true,
+          "note": "Cụm AWS Sydney phục vụ Valorant Oceania."
+        },
+        {
+          "id": "eu-central-1",
+          "name": "Frankfurt (Châu Âu)",
+          "host": "eu-central-1.signin.aws.amazon.com",
+          "testUrl": "https://eu-central-1.signin.aws.amazon.com/health",
+          "type": "http-head",
+          "verified": true,
+          "note": "Cụm AWS Frankfurt cho máy chủ EU."
+        },
+        {
+          "id": "us-east-1",
+          "name": "Virginia (Bắc Mỹ Đông)",
+          "host": "us-east-1.signin.aws.amazon.com",
+          "testUrl": "https://us-east-1.signin.aws.amazon.com/health",
+          "type": "http-head",
+          "verified": true,
+          "note": "Cụm AWS N.Virginia cho máy chủ NA East."
+        }
+      ]
+    },
+    {
+      "id": "cs2",
+      "name": "Counter-Strike 2",
+      "publisher": "Valve",
+      "category": "fps",
+      "icon": "crosshair",
+      "color": "#DE9B35",
+      "statusUrl": "https://steamstat.us",
+      "thresholds": {
+        "greatPing": 30,
+        "okPing": 60,
+        "greatJitter": 3,
+        "okJitter": 7,
+        "maxLoss": 0
+      },
+      "regions": [
+        {
+          "id": "sgp",
+          "name": "Singapore (Valve SEA)",
+          "host": "cdn.steamstatic.com",
+          "testUrl": "https://cdn.steamstatic.com/favicon.ico",
+          "type": "http-head",
+          "verified": true,
+          "note": "CDN Edge Valve phân phối nội dung game CS2 tại Singapore."
+        },
+        {
+          "id": "hkg",
+          "name": "Hong Kong (Valve HK)",
+          "host": "community.cloudflare.steamstatic.com",
+          "testUrl": "https://community.cloudflare.steamstatic.com/favicon.ico",
+          "type": "http-head",
+          "verified": true,
+          "note": "Cụm Steam Community Edge tại khu vực HK/Đông Á."
+        },
+        {
+          "id": "tyo",
+          "name": "Tokyo (Valve Japan)",
+          "host": "steamcommunity.com",
+          "testUrl": "https://steamcommunity.com/favicon.ico",
+          "type": "http-head",
+          "verified": true,
+          "note": "Steam Edge phục vụ người chơi CS2 tại Nhật Bản."
+        },
+        {
+          "id": "fra",
+          "name": "Frankfurt (Valve EU)",
+          "host": "store.steampowered.com",
+          "testUrl": "https://store.steampowered.com/favicon.ico",
+          "type": "http-head",
+          "verified": true,
+          "note": "Steam Edge Europe."
+        }
+      ]
+    },
+    {
+      "id": "delta-force",
+      "name": "Delta Force",
+      "publisher": "Team Jade / TiMi Studio",
+      "category": "fps",
+      "icon": "zap",
+      "color": "#22C55E",
+      "statusUrl": "https://www.playdeltaforce.com",
+      "thresholds": {
+        "greatPing": 40,
+        "okPing": 75,
+        "greatJitter": 4,
+        "okJitter": 9,
+        "maxLoss": 1
+      },
+      "regions": [
+        {
+          "id": "sea-sg",
+          "name": "Singapore (SEA Edge)",
+          "host": "cdn.playdeltaforce.com",
+          "testUrl": "https://www.playdeltaforce.com/favicon.ico",
+          "type": "http-head",
+          "verified": false,
+          "note": "TODO: Cần kiểm tra endpoint chính thức cụm server dedicated của Level Infinite / Tencent Cloud khi mở OBT toàn cầu."
+        },
+        {
+          "id": "ea-hk",
+          "name": "Hong Kong (East Asia Edge)",
+          "host": "hk.tencentcloudapi.com",
+          "testUrl": "https://cloud.tencent.com/favicon.ico",
+          "type": "http-head",
+          "verified": false,
+          "note": "TODO: Cần xác thực endpoint Tencent Cloud HK nơi đặt máy chủ Delta Force Châu Á."
+        },
+        {
+          "id": "na-us",
+          "name": "North America",
+          "host": "www.playdeltaforce.com",
+          "testUrl": "https://www.playdeltaforce.com/robots.txt",
+          "type": "http-head",
+          "verified": false,
+          "note": "TODO: Cập nhật endpoint chính xác cụm NA cho Delta Force."
+        }
+      ]
+    },
+    {
+      "id": "lol",
+      "name": "League of Legends",
+      "publisher": "Riot Games",
+      "category": "moba",
+      "icon": "trophy",
+      "color": "#0BC6E3",
+      "statusUrl": "https://status.riotgames.com",
+      "thresholds": {
+        "greatPing": 45,
+        "okPing": 80,
+        "greatJitter": 5,
+        "okJitter": 12,
+        "maxLoss": 1
+      },
+      "regions": [
+        {
+          "id": "vn",
+          "name": "Việt Nam (VNG / Riot VN)",
+          "host": "lienminh.vnggames.com",
+          "testUrl": "https://lienminh.vnggames.com/favicon.ico",
+          "type": "http-head",
+          "verified": false,
+          "note": "TODO: Endpoint CDN cổng thông tin LMHT Việt Nam (cần cập nhật endpoint server trận nếu có)."
+        },
+        {
+          "id": "sg",
+          "name": "Singapore (Riot SEA)",
+          "host": "ap-southeast-1.signin.aws.amazon.com",
+          "testUrl": "https://ap-southeast-1.signin.aws.amazon.com/health",
+          "type": "http-head",
+          "verified": true,
+          "note": "Cụm máy chủ Riot Đông Nam Á đặt tại AWS Singapore."
+        },
+        {
+          "id": "kr",
+          "name": "Hàn Quốc (Riot Korea)",
+          "host": "ap-northeast-2.signin.aws.amazon.com",
+          "testUrl": "https://ap-northeast-2.signin.aws.amazon.com/health",
+          "type": "http-head",
+          "verified": true,
+          "note": "AWS Seoul nơi đặt hạ tầng Riot LoL Hàn Quốc."
+        }
+      ]
+    },
+    {
+      "id": "dota2",
+      "name": "Dota 2",
+      "publisher": "Valve",
+      "category": "moba",
+      "icon": "swords",
+      "color": "#E63946",
+      "statusUrl": "https://steamstat.us",
+      "thresholds": {
+        "greatPing": 45,
+        "okPing": 80,
+        "greatJitter": 5,
+        "okJitter": 12,
+        "maxLoss": 1
+      },
+      "regions": [
+        {
+          "id": "sgp",
+          "name": "Singapore (Valve SEA)",
+          "host": "cdn.steamstatic.com",
+          "testUrl": "https://cdn.steamstatic.com/favicon.ico",
+          "type": "http-head",
+          "verified": true,
+          "note": "Cụm Dota 2 Singapore Edge của Valve."
+        },
+        {
+          "id": "tyo",
+          "name": "Tokyo (Nhật Bản)",
+          "host": "steamcommunity.com",
+          "testUrl": "https://steamcommunity.com/favicon.ico",
+          "type": "http-head",
+          "verified": true,
+          "note": "Cụm Valve Japan cho người chơi Đông Bắc Á."
+        },
+        {
+          "id": "fra",
+          "name": "Frankfurt (Tây Âu)",
+          "host": "store.steampowered.com",
+          "testUrl": "https://store.steampowered.com/favicon.ico",
+          "type": "http-head",
+          "verified": true,
+          "note": "Cụm EU West Dota 2."
+        }
+      ]
+    },
+    {
+      "id": "apex",
+      "name": "Apex Legends",
+      "publisher": "Electronic Arts",
+      "category": "battle-royale",
+      "icon": "flame",
+      "color": "#FF4655",
+      "statusUrl": "https://help.ea.com",
+      "thresholds": {
+        "greatPing": 40,
+        "okPing": 75,
+        "greatJitter": 4,
+        "okJitter": 9,
+        "maxLoss": 1
+      },
+      "regions": [
+        {
+          "id": "sgp",
+          "name": "Singapore",
+          "host": "ap-southeast-1.signin.aws.amazon.com",
+          "testUrl": "https://ap-southeast-1.signin.aws.amazon.com/health",
+          "type": "http-head",
+          "verified": true,
+          "note": "Cụm AWS Singapore nơi Multiplay/EA host server Apex SEA."
+        },
+        {
+          "id": "tyo",
+          "name": "Tokyo (Nhật Bản)",
+          "host": "ap-northeast-1.signin.aws.amazon.com",
+          "testUrl": "https://ap-northeast-1.signin.aws.amazon.com/health",
+          "type": "http-head",
+          "verified": true,
+          "note": "Cụm AWS Tokyo cho Apex Nhật Bản."
+        }
+      ]
+    },
+    {
+      "id": "pubg",
+      "name": "PUBG: Battlegrounds",
+      "publisher": "Krafton",
+      "category": "battle-royale",
+      "icon": "target",
+      "color": "#F39C12",
+      "statusUrl": "https://pubg.com",
+      "thresholds": {
+        "greatPing": 45,
+        "okPing": 80,
+        "greatJitter": 5,
+        "okJitter": 10,
+        "maxLoss": 1
+      },
+      "regions": [
+        {
+          "id": "sgp",
+          "name": "Singapore (SEA)",
+          "host": "ap-southeast-1.signin.aws.amazon.com",
+          "testUrl": "https://ap-southeast-1.signin.aws.amazon.com/health",
+          "type": "http-head",
+          "verified": true,
+          "note": "Hạ tầng AWS Singapore của PUBG."
+        },
+        {
+          "id": "kor",
+          "name": "Seoul (Hàn Quốc)",
+          "host": "ap-northeast-2.signin.aws.amazon.com",
+          "testUrl": "https://ap-northeast-2.signin.aws.amazon.com/health",
+          "type": "http-head",
+          "verified": true,
+          "note": "Hạ tầng AWS Seoul cho PUBG KR/JP."
+        }
+      ]
+    },
+    {
+      "id": "fortnite",
+      "name": "Fortnite",
+      "publisher": "Epic Games",
+      "category": "battle-royale",
+      "icon": "sparkles",
+      "color": "#9B59B6",
+      "statusUrl": "https://status.epicgames.com",
+      "thresholds": {
+        "greatPing": 40,
+        "okPing": 75,
+        "greatJitter": 4,
+        "okJitter": 9,
+        "maxLoss": 1
+      },
+      "regions": [
+        {
+          "id": "sgp",
+          "name": "Singapore (SEA AWS)",
+          "host": "ap-southeast-1.signin.aws.amazon.com",
+          "testUrl": "https://ap-southeast-1.signin.aws.amazon.com/health",
+          "type": "http-head",
+          "verified": true,
+          "note": "Epic Games sử dụng AWS AP-Southeast-1 cho cụm Đông Nam Á."
+        },
+        {
+          "id": "tyo",
+          "name": "Tokyo (Nhật Bản)",
+          "host": "ap-northeast-1.signin.aws.amazon.com",
+          "testUrl": "https://ap-northeast-1.signin.aws.amazon.com/health",
+          "type": "http-head",
+          "verified": true,
+          "note": "AWS Tokyo cho Fortnite khu vực Châu Á."
+        },
+        {
+          "id": "use",
+          "name": "Virginia (US East)",
+          "host": "us-east-1.signin.aws.amazon.com",
+          "testUrl": "https://us-east-1.signin.aws.amazon.com/health",
+          "type": "http-head",
+          "verified": true,
+          "note": "AWS US East cho Fortnite NA."
+        }
+      ]
+    }
+  ]
+}
