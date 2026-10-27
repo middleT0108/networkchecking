@@ -24,6 +24,9 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      - name: Build Shared Package
+        run: npm run build --workspace=@netcheck/shared
+
       - name: Run Unit Tests (All Workspaces)
         run: npm test
 
