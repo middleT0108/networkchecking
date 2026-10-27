@@ -18,65 +18,121 @@ export const HistoryView: React.FC = () => {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Fetch history from backend
+  // Fetch history from backend or localStorage fallback
   const fetchHistory = async () => {
     setIsLoading(true);
+    let loadedRecords: HistoryRecord[] = [];
+
+    // 1. Try fetching from Cloudflare backend if configured
     try {
       const res = await fetch(`/api/history?gameId=${activeGame.id}&range=${selectedRange}`);
       if (res.ok) {
         const data = (await res.json()) as { records: HistoryRecord[]; aggregation: HistoryAggregation };
         setRecords(data.records);
         setAggregation(data.aggregation);
+        setIsLoading(false);
+        return;
       }
     } catch {
-      // Offline fallback
-    } finally {
-      setIsLoading(false);
+      // Backend not yet available
     }
+
+    // 2. Fallback to localStorage for instant client-side history on GitHub Pages
+    try {
+      const stored = localStorage.getItem('netcheck_history_v1');
+      if (stored) {
+        const all: HistoryRecord[] = JSON.parse(stored);
+        let rangeMs = 24 * 60 * 60 * 1000;
+        if (selectedRange === '1h') rangeMs = 60 * 60 * 1000;
+        if (selectedRange === '7d') rangeMs = 7 * 24 * 60 * 60 * 1000;
+
+        const since = Date.now() - rangeMs;
+        loadedRecords = all.filter((r) => r.gameId === activeGame.id && r.timestamp >= since);
+      }
+    } catch {
+      // ignore
+    }
+
+    setRecords(loadedRecords);
+
+    // Compute aggregation locally if loaded from local
+    if (loadedRecords.length > 0) {
+      const pings = loadedRecords.map((r) => r.avgPing);
+      const jitters = loadedRecords.map((r) => r.jitter);
+      const sum = (arr: number[]) => arr.reduce((acc, v) => acc + v, 0);
+      const sortedPings = [...pings].sort((a, b) => a - b);
+      const p50 = sortedPings[Math.floor(sortedPings.length * 0.5)];
+      const p95 = sortedPings[Math.floor(sortedPings.length * 0.95)] || p50;
+
+      setAggregation({
+        count: loadedRecords.length,
+        avgPing: Math.round((sum(pings) / loadedRecords.length) * 10) / 10,
+        avgJitter: Math.round((sum(jitters) / loadedRecords.length) * 10) / 10,
+        avgLoss: 0,
+        avgScore: Math.round(sum(loadedRecords.map((r) => r.score)) / loadedRecords.length),
+        p50Ping: p50,
+        p95Ping: p95
+      });
+    } else {
+      setAggregation(null);
+    }
+
+    setIsLoading(false);
   };
 
   useEffect(() => {
     fetchHistory();
   }, [activeGame.id, selectedRange]);
 
-  // Save current session to D1 backend
+  // Save current session (Local + Cloud)
   const handleSaveSession = async () => {
     if (metrics.sampleCount === 0 || isSaving) return;
     setIsSaving(true);
 
-    try {
-      const payload: Partial<HistoryRecord> = {
-        gameId: activeGame.id,
-        regionId: selectedRegionId,
-        timestamp: Date.now(),
-        avgPing: metrics.ping.average,
-        medianPing: metrics.ping.median,
-        minPing: metrics.ping.min,
-        maxPing: metrics.ping.max,
-        jitter: metrics.jitter,
-        packetLoss: metrics.packetLoss,
-        score: metrics.quality.score,
-        rating: metrics.quality.rating,
-        connectionType: connectionInfo.effectiveType || 'wifi-lan',
-        clientType: 'web'
-      };
+    const record: HistoryRecord = {
+      id: crypto.randomUUID ? crypto.randomUUID().slice(0, 8) : Date.now().toString(),
+      gameId: activeGame.id,
+      regionId: selectedRegionId,
+      timestamp: Date.now(),
+      avgPing: metrics.ping.average,
+      medianPing: metrics.ping.median,
+      minPing: metrics.ping.min,
+      maxPing: metrics.ping.max,
+      jitter: metrics.jitter,
+      packetLoss: metrics.packetLoss,
+      score: metrics.quality.score,
+      rating: metrics.quality.rating,
+      connectionType: connectionInfo.effectiveType || 'wifi-lan',
+      clientType: 'web',
+      ispCountry: 'VN'
+    };
 
-      const res = await fetch('/api/history', {
+    // Save to localStorage
+    try {
+      const existing = localStorage.getItem('netcheck_history_v1');
+      const list: HistoryRecord[] = existing ? JSON.parse(existing) : [];
+      list.unshift(record);
+      // Keep up to 200 records
+      localStorage.setItem('netcheck_history_v1', JSON.stringify(list.slice(0, 200)));
+    } catch {
+      // ignore
+    }
+
+    // Also attempt sending to D1 backend if available
+    try {
+      await fetch('/api/history', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(record)
       });
-
-      if (res.ok) {
-        setSaveSuccess(true);
-        setTimeout(() => setSaveSuccess(false), 3000);
-        fetchHistory(); // refresh list
-      }
     } catch {
-      // Handle error
-    } finally {
-      setIsSaving(false);
+      // Silently fall back to local
     }
+
+    setSaveSuccess(true);
+    setTimeout(() => setSaveSuccess(false), 3000);
+    fetchHistory();
+    setIsSaving(false);
   };
 
   // Export to CSV

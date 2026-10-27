@@ -153,16 +153,35 @@ class MeasurementService {
 
   /**
    * Runs an on-demand Download & Upload Speed Test
+   * Uses Cloudflare Speed CDN (__down / __up) as reliable global high-speed endpoints,
+   * with fallback to custom worker endpoint if configured.
    */
   public async runSpeedTest() {
     const { setSpeed } = useNetworkStore.getState();
     setSpeed({ isRunning: true, phase: 'download', progress: 10, error: undefined });
 
+    const apiUrl = ((import.meta as unknown as { env?: Record<string, string> }).env?.VITE_API_URL) || '';
+
     try {
-      // 1. Download Test (fetch 2MB payload)
+      // 1. Download Test (Fetch ~2MB chunk from Edge CDN)
+      let downloadUrl = 'https://speed.cloudflare.com/__down?bytes=2097152';
+      if (apiUrl && !apiUrl.includes('your-subdomain')) {
+        downloadUrl = `${apiUrl}/api/speed/download?bytes=2097152`;
+      }
+
       const downloadStart = performance.now();
-      const downloadRes = await fetch('/api/speed/download?bytes=2097152', { cache: 'no-store' });
-      if (!downloadRes.ok) throw new Error('Download endpoint phản hồi lỗi: ' + downloadRes.status);
+      let downloadRes = await fetch(downloadUrl, { cache: 'no-store' });
+
+      // Fallback to Cloudflare Speed CDN if custom API endpoint is down or 404
+      if (!downloadRes.ok && downloadUrl !== 'https://speed.cloudflare.com/__down?bytes=2097152') {
+        downloadUrl = 'https://speed.cloudflare.com/__down?bytes=2097152';
+        downloadRes = await fetch(downloadUrl, { cache: 'no-store' });
+      }
+
+      if (!downloadRes.ok) {
+        throw new Error(`Download test không thành công (HTTP ${downloadRes.status})`);
+      }
+
       const buf = await downloadRes.arrayBuffer();
       const downloadEnd = performance.now();
 
@@ -171,18 +190,35 @@ class MeasurementService {
 
       setSpeed({ downloadMbps, phase: 'upload', progress: 60 });
 
-      // 2. Upload Test (send 1MB payload)
+      // 2. Upload Test (Send 1MB payload to Edge upload endpoint)
+      let uploadUrl = 'https://speed.cloudflare.com/__up';
+      if (apiUrl && !apiUrl.includes('your-subdomain')) {
+        uploadUrl = `${apiUrl}/api/speed/upload`;
+      }
+
       const uploadBytes = 1048576;
       const uploadPayload = new Uint8Array(uploadBytes);
       const uploadStart = performance.now();
-      const uploadRes = await fetch('/api/speed/upload', {
+
+      let uploadRes = await fetch(uploadUrl, {
         method: 'POST',
         body: uploadPayload
       });
-      if (!uploadRes.ok) throw new Error('Upload endpoint phản hồi lỗi: ' + uploadRes.status);
-      await uploadRes.json();
-      const uploadEnd = performance.now();
 
+      // Fallback to Cloudflare Speed CDN upload if custom worker fails
+      if (!uploadRes.ok && uploadUrl !== 'https://speed.cloudflare.com/__up') {
+        uploadUrl = 'https://speed.cloudflare.com/__up';
+        uploadRes = await fetch(uploadUrl, {
+          method: 'POST',
+          body: uploadPayload
+        });
+      }
+
+      if (!uploadRes.ok) {
+        throw new Error(`Upload test không thành công (HTTP ${uploadRes.status})`);
+      }
+
+      const uploadEnd = performance.now();
       const uploadSeconds = Math.max(0.1, (uploadEnd - uploadStart) / 1000);
       const uploadMbps = Math.round(((uploadBytes * 8) / uploadSeconds / (1024 * 1024)) * 100) / 100;
 

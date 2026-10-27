@@ -53,8 +53,8 @@ const initialMetrics: NetworkMetrics = {
 
 export const useNetworkStore = create<NetworkState>((set, get) => ({
   isTesting: true,
-  activeEndpointName: 'NetCheck Edge Baseline',
-  activeEndpointUrl: '/api/echo',
+  activeEndpointName: 'NetCheck Edge Baseline (Cloudflare CDN)',
+  activeEndpointUrl: 'https://speed.cloudflare.com/__down?bytes=0',
   isOnline: typeof navigator !== 'undefined' ? navigator.onLine : true,
   isTabHidden: false,
   metrics: initialMetrics,
